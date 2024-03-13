@@ -1,92 +1,40 @@
 require "../terminal_commands.rb"
+require "./screen.rb"
 require "./target.rb"
+require "./player.rb"
 
-Rows = 20
-Columns = 40
+ROWS = 20
+COLUMNS = 42
 
-$targets = []
-
-$direction = "right"
-
-def generate_targets(start_row, start_column)
-    for row in (start_row...Rows/3)
-        for column in (start_column..Columns-2).step(2)
-            target = Target.new(row, column)
-            $targets.append(target)
-        end
-    end
-end
-
-def draw_screen
-    for row in (1..Rows)
-        for column in (1..Columns)
-            if $targets.any? { |target| target.position == [row, column]}
-                print '*'
-            else
-                print "\u00a0"
-            end
-        end
-        
-        if not row == Rows
-            puts ""
-        end
-    end
-end
-
-def move_targets
-    case $direction
-
-    when "right"
-        if $targets.any? { |target| target.position[1] >= Columns }
-            for target in $targets
-                target.position[0] += 1
-                $direction = "left"
-            end
-        
-        else
-            for target in $targets
-                target.position[1] += 1
-            end
-        end
-    
-    when "left"
-        if $targets.any? { |target| target.position[1] <= 1 }
-            for target in $targets
-                target.position[0] += 1
-                $direction = "right"
-            end
-        
-        else
-            for target in $targets
-                target.position[1] -= 1
-            end
-        end
-    end
-end
-
-def down_barrier_collision
-    return $targets.any? { |target| target.position == [Rows, 1] }
-end
+ticks = 0
 
 if __FILE__ == $0
-    move_cursor(1, 1)
 
-    set_size(Rows, Columns)
+    hide_key_input
+    set_title("Space Invaders")
+    set_size(ROWS, COLUMNS)
+    move_cursor(1, 1)
     clear_screen
     hide_cursor
 
-    generate_targets(3, 3)
-
+    Target.generate_targets(3, 3, ROWS, COLUMNS)
+    
     while true
-        if (down_barrier_collision)
-            break
+
+        ticks += 1
+
+        if (ticks % 60 == 0)
+            Target.move_targets(ROWS, COLUMNS)
+            clear_screen
         end
 
-        move_targets
-        
-        clear_screen
-        draw_screen
+        read_key
 
-        sleep(0.1)
+        move_cursor(1,1)
+        draw_screen(ROWS, COLUMNS)
+        
     end
+
+    show_key_input
+
 end
