@@ -1,8 +1,11 @@
+require "./screen.rb"
+
 class Target
 
     @@symbol = "*"
     @@targets = []
     @@direction = "right"
+
 
     def initialize(row, column)
         @position = [row, column]
@@ -36,10 +39,10 @@ class Target
         case @@direction
     
         when "right"
-            if @@targets.any? { |target| target.position[1] >=  columns } # right barrier collision
+            if @@targets.any? { |target| target.position[1] >= columns } # right barrier collision
                 
                 if @@targets.any? { |target| target.position[0] >= rows - 1 } # player row collision 
-                    exit
+                    game_over
                 else
                     for target in @@targets
                         target.position[0] += 1
@@ -55,9 +58,14 @@ class Target
     
         when "left"
             if @@targets.any? { |target| target.position[1] <= 1 } # left barrier collision
-                for target in @@targets
-                    target.position[0] += 1
-                    @@direction = "right"
+
+                if @@targets.any? { |target| target.position[0] >= rows - 1 } # player row collision 
+                    game_over
+                else
+                    for target in @@targets
+                        target.position[0] += 1
+                        @@direction = "right"
+                    end
                 end
             
             else

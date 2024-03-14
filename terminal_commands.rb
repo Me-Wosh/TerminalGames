@@ -2,7 +2,7 @@ def clear_screen
     print "\e[2J"
 end
 
-def set_size(rows, columns)
+def set_terminal_size(rows, columns)
     print "\e[8;#{rows};#{columns}t"
 end
 
@@ -44,4 +44,8 @@ end
 
 def cursor_next_line_beggining(amount)
     print "\e[#{amount}E"
+end
+
+def set_color(color)
+    print "\e[#{color}m"
 end
