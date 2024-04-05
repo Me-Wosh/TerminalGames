@@ -1,11 +1,4 @@
-require "./screen.rb"
-
 class Target
-
-    @@symbol = "*"
-    @@targets = []
-    @@direction = "right"
-
 
     def initialize(row, column)
         @position = [row, column]
@@ -15,66 +8,38 @@ class Target
         return @position
     end
 
-    def self.symbol
-        return @@symbol
-    end
-
-    def self.targets
-        return @@targets
+    def symbol
+        return @symbol = "*"
     end
 
     def self.generate_targets(start_row, start_column, max_rows, max_columns)
 
+        targets = []
+
         for row in (start_row...max_rows / 3)
             for column in (start_column..max_columns - 2).step(2)
                 target = new(row, column)
-                @@targets.append(target)
+                targets.append(target)
             end
         end
+
+        return targets
 
     end
 
-    def self.move_targets(rows, columns)
+    def self.get_random_target_position(targets)
     
-        case @@direction
-    
-        when "right"
-            if @@targets.any? { |target| target.position[1] >= columns } # right barrier collision
-                
-                if @@targets.any? { |target| target.position[0] >= rows - 1 } # player row collision 
-                    game_over
-                else
-                    for target in @@targets
-                        target.position[0] += 1
-                        @@direction = "left"
-                    end
-                end
-            
-            else
-                for target in @@targets
-                    target.position[1] += 1
-                end
-            end
-    
-        when "left"
-            if @@targets.any? { |target| target.position[1] <= 1 } # left barrier collision
+        random = Random.new
+        random_index = random.rand(targets.length)
+        random_target_position = [targets[random_index].position[0], targets[random_index].position[1]] # make sure we make an actual copy of the array instead of creating a reference
+        random_target_position[0] += 1
 
-                if @@targets.any? { |target| target.position[0] >= rows - 1 } # player row collision 
-                    game_over
-                else
-                    for target in @@targets
-                        target.position[0] += 1
-                        @@direction = "right"
-                    end
-                end
-            
-            else
-                for target in @@targets
-                    target.position[1] -= 1
-                end
-            end
+        while targets.any? { |target| target.position[1] == random_target_position[1] and target.position[0] > random_target_position[0] }
+            random_target_position[0] += 1
         end
-
+    
+        return random_target_position
+        
     end
 
 end

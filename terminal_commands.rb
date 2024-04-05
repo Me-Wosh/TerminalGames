@@ -1,5 +1,15 @@
+require "io/console"
+
 def clear_screen
     print "\e[2J"
+end
+
+def clear_history
+    print "\e[3J"
+end
+
+def get_terminal_size
+    return IO.console.winsize
 end
 
 def set_terminal_size(rows, columns)
@@ -11,11 +21,11 @@ def set_title(title)
 end
 
 def hide_key_input
-    system("stty raw -echo")
+    STDIN.raw!
 end
 
 def show_key_input
-    system("stty -raw echo")
+    STDIN.cooked!
 end
 
 def hide_cursor
@@ -46,6 +56,6 @@ def cursor_next_line_beggining(amount)
     print "\e[#{amount}E"
 end
 
-def set_color(color)
+def font_color(color)
     print "\e[#{color}m"
 end

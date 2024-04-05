@@ -1,96 +1,134 @@
 require "../terminal_commands.rb"
 require "../colors.rb"
-require "io/console"
 require "./target.rb"
 require "./player.rb"
+require "./shield.rb"
 
-$score = 0
-$rows = 0
-$columns = 0
 
-def set_screen_size(rows, columns)
-    $rows = rows
-    $columns = columns
+$shields_starting_row = 0
+$shields_ending_row = 0
+$targets_starting_row = 0
+$targets_ending_row = 0
+
+def bullets_collision
+    if $target_bullet and $player_bullet and $target_bullet.position == $player_bullet.position
+        return true
+    else
+        return false
+    end
 end
 
 def draw_screen
 
-    if Player.bullet_position and Player.bullet_position[0] <= 1 # top barrier
-        Player.bullet_position = nil
+    if $player_bullet and $player_bullet.position[0] <= 1 # top barrier
+        $player_bullet = nil
     end
 
-    for row in (1..$rows)
+    if bullets_collision
+        $target_bullet = nil
+        $player_bullet = nil
+    end
+
+    if $shields.any?
+        $shields_starting_row = $shields.first.position[0]
+        $shields_ending_row = $shields.last.position[0]
+    end
+
+    if $targets.any?
+        $targets_starting_row = $targets.first.position[0]
+        $targets_ending_row = $targets.last.position[0]
+    end
+
+    for row in (1..ROWS)
 
         if row == 1
+            font_color(WHITE)
             print "Score: #{$score}"
         end
 
-        for column in (1..$columns)
+        if row == ROWS
+            font_color(WHITE)
+            print "#{Player.health} "
+            
+            Player.health.times do
+                font_color(Player.color)
+                print "#{Player.symbol} "
+            end
+        end
 
-            if Player.bullet_position and Target.targets.any? { |target| target.position == Player.bullet_position }
-                index = Target.targets.index { |target| target.position == Player.bullet_position }
-                Target.targets.delete_at(index)
-                Player.bullet_position = nil
-                $score += 1
+        for column in (1..COLUMNS)
 
-            elsif Target.targets.any? { |target| target.position == [row, column]}
-                print Target.symbol
+            if row >= $targets_starting_row and row <= $targets_ending_row and target_index = $targets.index { |target| target.position == [row, column] }
+
+                if $player_bullet and $targets[target_index].position == $player_bullet.position
+                    $targets.delete_at(target_index)
+                    $player_bullet = nil
+                    $score += 1
+                    cursor_right(1)
+
+                elsif shield_index = $shields.index { |shield| shield.position == [row, column] }
+                    $shields.delete_at(shield_index)
+                    cursor_right(1)
+
+                else
+                    font_color(WHITE)
+                    print $targets[target_index].symbol
+                end
+
+            elsif row >= $shields_starting_row and row <= $shields_ending_row and shield_index = $shields.index { |shield| shield.position == [row, column] }
+                
+                if $player_bullet and $player_bullet.position == $shields[shield_index].position
+                    
+                    $player_bullet = nil
+                    cursor_right(1)
+
+                    if $shields[shield_index].health > 1
+                        $shields[shield_index].health -= 1
+                    else
+                        $shields.delete_at(shield_index)
+                    end
+                
+                elsif $target_bullet and $target_bullet.position == $shields[shield_index].position
+
+                    $target_bullet = nil
+                    cursor_right(1)
+
+                    if $shields[shield_index].health > 1
+                        $shields[shield_index].health -= 1
+                    else
+                        $shields.delete_at(shield_index)
+                    end
+
+                else
+                    font_color($shields[shield_index].color)
+                    print $shields[shield_index].health
+                end
+
+            elsif $player_bullet and $player_bullet.position == [row, column]
+                font_color(Player.color)
+                print $player_bullet.symbol
 
             elsif Player.position == [row, column]
-                set_color(Player.color)
+                font_color(Player.color)
                 print Player.symbol
-                set_color(DEFAULT)
 
-            elsif Player.bullet_position == [row, column]
-                set_color(Player.bullet_color)
-                print Player.bullet_symbol
-                set_color(DEFAULT)
+            elsif $target_bullet and $target_bullet.position == [row, column]
+                font_color(WHITE)
+                print $target_bullet.symbol
 
             else
                 cursor_right(1)
             end
         end
         
-        if not row == $rows
+        if row < ROWS
             cursor_next_line_beggining(1)
         end
+
+        font_color(WHITE)
 
     end
 
     cursor_current_line_beggining
-
-end
-
-def game_over
-    clear_screen
-    move_cursor(1, 1)
-    print "Game Over, Score: #{$score}"
-    exit
-end
-
-
-def read_key
-    
-    key = STDIN.read_nonblock(1) rescue nil
-        
-    case key
-    when 'q'
-        exit
-
-    when 'C' # right arrow
-        if not Player.position[1] >= $columns 
-            Player.move_right
-            clear_screen
-        end
-
-    when 'D' # left arrow
-        if not Player.position[1] <= 1
-            Player.move_left
-            clear_screen
-        end
-
-    when ' ' # spacebar
-        Player.shoot
-    end
 
 end

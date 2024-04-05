@@ -1,7 +1,8 @@
 require "../colors.rb"
 
 class Player
-    @@bullet_position = nil
+    @@health = 3
+    @@max_health = 3
     
     def self.position
         return @@position
@@ -9,6 +10,18 @@ class Player
 
     def self.position=(position)
         @@position = position
+    end
+
+    def self.health
+        return @@health
+    end
+
+    def self.health=(value)
+        @@health = value
+    end
+
+    def self.max_health
+        return @@max_health
     end
 
     def self.symbol
@@ -19,10 +32,6 @@ class Player
         return @@color = GREEN
     end
 
-    def self.bullet_color
-        return @@bullet_color = GREEN
-    end
-
     def self.move_left
         @@position[1] -= 1
     end
@@ -31,27 +40,4 @@ class Player
         @@position[1] += 1
     end
 
-    def self.bullet_position
-        return @@bullet_position
-    end
-
-    def self.bullet_position=(position)
-        @@bullet_position = position
-    end
-
-    def self.shoot
-        if @@bullet_position
-            return
-        end
-
-        @@bullet_position = [@@position[0] - 1, @@position[1]]
-    end
-
-    def self.move_bullet
-        @@bullet_position[0] -= 1
-    end
-
-    def self.bullet_symbol
-        return bullet = "."
-    end
 end
