@@ -1,6 +1,7 @@
 class Bullet
     def shoot(row, column)
         @position = [row, column]
+        @symbol = "."
     end
 
     def position
@@ -8,6 +9,10 @@ class Bullet
     end
 
     def symbol
-        return @symbol = "."
+        return @symbol
+    end
+
+    def symbol=(value)
+        @symbol = value
     end
 end

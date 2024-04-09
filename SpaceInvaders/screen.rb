@@ -1,42 +1,18 @@
-require "../terminal_commands.rb"
-require "../colors.rb"
-require "./target.rb"
-require "./player.rb"
-require "./shield.rb"
-
-
-$shields_starting_row = 0
-$shields_ending_row = 0
-$targets_starting_row = 0
-$targets_ending_row = 0
-
-def bullets_collision
-    if $target_bullet and $player_bullet and $target_bullet.position == $player_bullet.position
-        return true
-    else
-        return false
-    end
-end
-
 def draw_screen
 
-    if $player_bullet and $player_bullet.position[0] <= 1 # top barrier
-        $player_bullet = nil
-    end
-
-    if bullets_collision
-        $target_bullet = nil
-        $player_bullet = nil
-    end
+    shields_starting_row = 0
+    shields_ending_row = 0
+    targets_starting_row = 0
+    targets_ending_row = 0    
 
     if $shields.any?
-        $shields_starting_row = $shields.first.position[0]
-        $shields_ending_row = $shields.last.position[0]
+        shields_starting_row = $shields.first.position[0]
+        shields_ending_row = $shields.last.position[0]
     end
 
     if $targets.any?
-        $targets_starting_row = $targets.first.position[0]
-        $targets_ending_row = $targets.last.position[0]
+        targets_starting_row = $targets.first.position[0]
+        targets_ending_row = $targets.last.position[0]
     end
 
     for row in (1..ROWS)
@@ -44,6 +20,9 @@ def draw_screen
         if row == 1
             font_color(WHITE)
             print "Score: #{$score}"
+            
+            move_cursor(row, COLUMNS / 2)
+            print "Level: #{$level}"
         end
 
         if row == ROWS
@@ -58,28 +37,40 @@ def draw_screen
 
         for column in (1..COLUMNS)
 
-            if row >= $targets_starting_row and row <= $targets_ending_row and target_index = $targets.index { |target| target.position == [row, column] }
+            if row >= targets_starting_row and row <= targets_ending_row and target_index = $targets.index { |target| target.position == [row, column] }
 
                 if $player_bullet and $targets[target_index].position == $player_bullet.position
                     $targets.delete_at(target_index)
                     $player_bullet = nil
                     $score += 1
-                    cursor_right(1)
+                    cursor_right (1)
 
                 elsif shield_index = $shields.index { |shield| shield.position == [row, column] }
                     $shields.delete_at(shield_index)
                     cursor_right(1)
 
                 else
-                    font_color(WHITE)
+                    font_color($targets[target_index].color)
                     print $targets[target_index].symbol
                 end
 
-            elsif row >= $shields_starting_row and row <= $shields_ending_row and shield_index = $shields.index { |shield| shield.position == [row, column] }
-                
-                if $player_bullet and $player_bullet.position == $shields[shield_index].position
-                    
+            elsif $special_target and $special_target.position == [row, column]
+
+                if $player_bullet and $special_target.position == $player_bullet.position
+                    $score += 10
+                    $special_target = nil
                     $player_bullet = nil
+                    cursor_right(1)
+                else
+                    font_color($special_target.color)
+                    print $special_target.symbol
+                end
+
+            elsif row <= shields_ending_row and row >= shields_starting_row and shield_index = $shields.index { |shield| shield.position == [row, column] }
+                
+                if $target_bullet and $target_bullet.position == $shields[shield_index].position
+
+                    $target_bullet = nil
                     cursor_right(1)
 
                     if $shields[shield_index].health > 1
@@ -87,10 +78,10 @@ def draw_screen
                     else
                         $shields.delete_at(shield_index)
                     end
-                
-                elsif $target_bullet and $target_bullet.position == $shields[shield_index].position
 
-                    $target_bullet = nil
+                elsif $player_bullet and $player_bullet.position == $shields[shield_index].position
+                    
+                    $player_bullet = nil
                     cursor_right(1)
 
                     if $shields[shield_index].health > 1
@@ -130,5 +121,24 @@ def draw_screen
     end
 
     cursor_current_line_beggining
+
+end
+
+def next_level_animation
+
+    font_color(WHITE)
+
+    for row in (1..ROWS)
+        for column in (1..COLUMNS / 2)
+            print "=="
+            sleep(0.01)
+        end
+    end
+
+    clear_screen
+    move_cursor(ROWS / 2, (COLUMNS / 2) - 3) # set cursor at the center of the screen including length of "LEVEL UP" text
+    print "LEVEL UP"
+    sleep(2)
+    clear_screen
 
 end
