@@ -8,6 +8,7 @@ It features (I believe) all mechanics that the original game had, that is:
 * Moving player character
 * Shooting at enemies
 * Enemies moving at intervals and shooting back at the player
+* Special faster enemy that spawns once in a while and rewards bonus points if shot
 * Shields that block both enemies and player bullets
 * 3 lives that can regenerate if certain conditions are met
 * Level ups
