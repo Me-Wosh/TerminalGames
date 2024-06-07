@@ -40,6 +40,14 @@ def move_cursor(rows, columns)
     print "\e[#{rows};#{columns}H"
 end
 
+def cursor_up(amount)
+    print "\e[#{amount}A"
+end
+
+def cursor_down(amount)
+    print "\e[#{amount}B"
+end
+
 def cursor_right(amount)
     print "\e[#{amount}C"
 end
