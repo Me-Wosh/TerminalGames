@@ -4,10 +4,6 @@ def clear_screen
     print "\e[2J"
 end
 
-def clear_history
-    print "\e[3J"
-end
-
 def get_terminal_size
     return IO.console.winsize
 end
