@@ -1,3 +1,5 @@
+require "./snake.rb"
+require "./food.rb"
 require "../colors.rb"
 require "../terminal_commands.rb"
 
@@ -16,8 +18,25 @@ def draw_screen(snake, food)
     snake.bodies_positions.each do | position |
         move_cursor(position.y, position.x)
         font_color(snake.color)
-        print snake.symbol
+
+        if position == snake.head
+            print snake.head_symbol
+        else
+            print snake.bodies_symbol
+        end
     end
+end
+
+def game_over()
+    clear_screen()
+    move_cursor(1, 1)
+    print "Game over, score: #{$score}"
+end
+
+def game_won()
+    clear_screen()
+    move_cursor(1, 1)
+    print "Congratulations you scored maximum points, score: #{$score}"
 end
 
 def draw_borders()
@@ -72,7 +91,7 @@ def draw_vertical_borders()
         # printing a character moves cursor one column to the right, therefore it is necessary to revert 
         # this prcoess by moving the cursor one column to the left in order to go straight down
         # this doesnt apply if terminal did resize correctly and it is the last column of the terminal
-        if i == 1 or COLUMNS < get_terminal_size().last
+        if i == 1 || COLUMNS < get_terminal_size().last
             cursor_left(1)
         end
         
@@ -80,7 +99,7 @@ def draw_vertical_borders()
             print "|"
             cursor_down(1)
 
-            if i == 1 or COLUMNS < get_terminal_size().last
+            if i == 1 || COLUMNS < get_terminal_size().last
                 cursor_left(1)
             end
         end

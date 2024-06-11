@@ -3,11 +3,13 @@ require "./position.rb"
 require "./snake.rb"
 require "./food.rb"
 require "./screen.rb"
+require "./directions.rb"
 require "../terminal_commands.rb"
+require "../colors.rb"
 
 ROWS = 20
 COLUMNS = 40
-$score = 0
+$score = 1
 
 def get_all_positions()
     positions = []
@@ -19,6 +21,18 @@ def get_all_positions()
     end
 
     return positions
+end
+
+def border_collision(snake)
+    return snake.head.y <= 3 || snake.head.y >= ROWS || snake.head.x <= 1 || snake.head.x >= COLUMNS
+end
+
+def body_collision(snake)
+    bodies_excluding_head = snake.bodies_positions[1...snake.bodies_positions.length]
+
+    # if there is still a body segment which has the same position as head even though head was just removed it 
+    # means that head collided with another body part
+    return bodies_excluding_head.include? snake.head
 end
 
 if __FILE__ == $0
@@ -34,58 +48,85 @@ if __FILE__ == $0
     snake = Snake.new(ROWS / 2, COLUMNS / 2)
     time_to_move_snake = Time.now() + snake.speed
 
-    available_positions = get_all_positions()
+    all_positions = get_all_positions()
 
-    # exclude snake head position
-    food = Food.new(available_positions.reject { | position | snake.bodies_positions.include? position })
+    # exclude snake head from available positions
+    food = Food.new(all_positions.reject { | position | snake.bodies_positions.include? position })
 
     while game_loop
+        if border_collision(snake) || body_collision(snake)
+            game_loop = false
+            game_over()
+            break
+        end
 
         now = Time.now()
 
         if now >= time_to_move_snake
             clear_screen()
-
-            tail = snake.bodies_positions.last
             snake.move()
+            time_to_move_snake = now + snake.speed 
+        end
+        
+        if snake.head == food.position
+            $score += 1
+            food = nil
+            snake.grow()
+        end
 
-            if snake.head == food.position
-                $score += 1
-                food = nil
-                snake.grow(tail)
+        if !food
+            # exclude snake bodies from available positions
+            available_positions = all_positions.reject { | position | snake.bodies_positions.include? position }
+
+            if available_positions.length <= 0
+                game_loop = false
+                game_won()
+                break
             end
 
-            time_to_move_snake = now + snake.speed
-        end
+            food = Food.new(available_positions)
+        end   
 
-        if food == nil
-            food = Food.new(available_positions.reject { | position | snake.bodies_positions.include? position })
-        end
-
+        # get user key input without blocking the program
         key = STDIN.read_nonblock(1) rescue nil
-
-        case key
-            when "q"
+        
+        if key
+            if key == "q"
                 game_loop = false
+                game_over()
+                break
+            end
+
+            previous_direction = snake.direction
 
             # up arrow
-            when "A"
-                snake.direction = "UP"
+            if key == "A"
+                snake.direction = UP
+            end
 
             # down arrow
-            when "B"
-                snake.direction = "DOWN"
+            if key == "B"
+                snake.direction = DOWN
+            end
 
             # right arrow
-            when "C"
-                snake.direction = "RIGHT"
+            if key == "C"
+                snake.direction = RIGHT
+            end
 
-            # left arrow    
-            when "D"
-                snake.direction = "LEFT"
+            # left arrow
+            if key == "D"
+                snake.direction = LEFT
+            end
+
+            if previous_direction != snake.direction
+                clear_screen()
+                snake.move()
+                time_to_move_snake = now + snake.speed
+            end
         end
 
-        draw_screen(snake, food)        
+        draw_screen(snake, food)
     end
 
     set_terminal_size(initial_terminal_size.first, initial_terminal_size.last)
