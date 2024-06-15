@@ -1,5 +1,5 @@
-require "./snake.rb"
 require "./food.rb"
+require "./snake.rb"
 require "../colors.rb"
 require "../terminal_commands.rb"
 
@@ -27,15 +27,36 @@ def draw_screen(snake, food)
     end
 end
 
-def game_over()
+def main_menu(option)
+    middle_row = ROWS / 2
+    middle_column = COLUMNS / 2
+    
+    menu_message = "Menu"
+
+    move_cursor(middle_row - 2, middle_column - menu_message.length / 2)
+    print menu_message
+
+    options = ["classic snake", "speed snake", "quit"]
+    longest_option = options.max() { | i, j | i.length <=> j.length }
+
+    3.times do | i |
+        move_cursor(middle_row + i, middle_column - longest_option.length / 2 + 2)
+        print options[i]
+    end
+
+    move_cursor(middle_row + option, middle_column - longest_option.length / 2)
+    print ">"
+end
+
+def game_over(row)
     clear_screen()
-    move_cursor(1, 1)
+    move_cursor(row, 1)
     print "Game over, score: #{$score}"
 end
 
-def game_won()
+def game_won(row)
     clear_screen()
-    move_cursor(1, 1)
+    move_cursor(row, 1)
     print "Congratulations you scored maximum points, score: #{$score}"
 end
 

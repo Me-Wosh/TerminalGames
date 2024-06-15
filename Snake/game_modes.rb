@@ -1,0 +1,2 @@
+CLASSIC = 0
+SPEED = 1

@@ -1,12 +1,14 @@
-require "./position.rb"
 require "./directions.rb"
+require "./game_modes.rb"
+require "./position.rb"
 require "../colors.rb"
 
 class Snake
     @new_body_position = nil
-    attr_reader :bodies_positions, :head, :direction, :speed, :head_symbol, :bodies_symbol, :color
+    @game_mode = nil
+    attr_reader :bodies_positions, :head, :direction, :delay, :head_symbol, :bodies_symbol, :color
 
-    def initialize(row, column)
+    def initialize(row, column, game_mode, available_positions)
         @bodies_positions = [Position.new(row, column)]
         @head = @bodies_positions.first
         # position where new body segment after growth will be placed
@@ -14,8 +16,10 @@ class Snake
         
         @direction = UP
 
+        @game_mode = game_mode
+
         # in seconds (after what time the snake will move again)
-        @speed = 0.15
+        @delay = available_positions / (available_positions * 6.66)
         
         @head_symbol = "&"
         @bodies_symbol = "#"
@@ -66,5 +70,9 @@ class Snake
 
     def grow()
         @bodies_positions.append(Position.new(@new_body_position.y, @new_body_position.x))
+
+        if @game_mode == SPEED && delay >= 0.02
+            @delay -= 0.01
+        end
     end
 end

@@ -1,14 +1,15 @@
 require "io/console"
-require "./position.rb"
-require "./snake.rb"
-require "./food.rb"
-require "./screen.rb"
 require "./directions.rb"
+require "./food.rb"
+require "./game_modes.rb"
+require "./position.rb"
+require "./screen.rb"
+require "./snake.rb"
 require "../terminal_commands.rb"
 require "../colors.rb"
 
-ROWS = 20
-COLUMNS = 40
+ROWS = 30
+COLUMNS = 80
 $score = 1
 
 def get_all_positions()
@@ -43,20 +44,84 @@ if __FILE__ == $0
     clear_screen()
     move_cursor(1, 1)
 
-    game_loop = true
+    game_mode = nil
+    option = 0
 
-    snake = Snake.new(ROWS / 2, COLUMNS / 2)
-    time_to_move_snake = Time.now() + snake.speed
+    game_loop = true
 
     all_positions = get_all_positions()
 
-    # exclude snake head from available positions
-    food = Food.new(all_positions.reject { | position | snake.bodies_positions.include? position })
+    snake = nil
+    time_to_move_snake = nil
+    food = nil
 
     while game_loop
+        if !game_mode
+            main_menu(option)
+
+            # get user key input without blocking the program
+            key = STDIN.read_nonblock(1) rescue nil
+        
+            if !key
+                next
+            end
+
+            # space
+            if key == " "
+                case option
+                    when 0
+                        game_mode = CLASSIC
+                        $score = 1
+                        
+                        snake = Snake.new(ROWS / 2, COLUMNS / 2, game_mode, all_positions.length)
+                        time_to_move_snake = Time.now() + snake.delay
+
+                        clear_screen()
+
+                    when 1
+                        game_mode = SPEED
+                        $score = 1
+
+                        snake = Snake.new(ROWS / 2, COLUMNS / 2, game_mode, all_positions.length)
+                        time_to_move_snake = Time.now() + snake.delay
+
+                        clear_screen()
+
+                    when 2
+                        game_loop = false
+                        clear_screen()
+                        break
+                end
+            end
+
+            # up arrow
+            if key == "A"
+                clear_screen()
+
+                if option == 0
+                    option = 2
+                else
+                    option -= 1
+                end
+            end
+
+            # down arrow
+            if key == "B"
+                clear_screen()
+
+                if option == 2
+                    option = 0
+                else
+                    option += 1
+                end
+            end
+                
+            next
+        end
+
         if border_collision(snake) || body_collision(snake)
             game_loop = false
-            game_over()
+            game_over(initial_terminal_size.first)
             break
         end
 
@@ -65,13 +130,7 @@ if __FILE__ == $0
         if now >= time_to_move_snake
             clear_screen()
             snake.move()
-            time_to_move_snake = now + snake.speed 
-        end
-        
-        if snake.head == food.position
-            $score += 1
-            food = nil
-            snake.grow()
+            time_to_move_snake = now + snake.delay 
         end
 
         if !food
@@ -80,21 +139,26 @@ if __FILE__ == $0
 
             if available_positions.length <= 0
                 game_loop = false
-                game_won()
+                game_won(initial_terminal_size.first)
                 break
             end
 
             food = Food.new(available_positions)
-        end   
+        end
+        
+        if snake.head == food.position
+            $score += 1
+            food = nil
+            snake.grow()
+        end
 
-        # get user key input without blocking the program
         key = STDIN.read_nonblock(1) rescue nil
         
         if key
             if key == "q"
-                game_loop = false
-                game_over()
-                break
+                game_mode = nil
+                clear_screen()
+                next
             end
 
             previous_direction = snake.direction
@@ -122,7 +186,7 @@ if __FILE__ == $0
             if previous_direction != snake.direction
                 clear_screen()
                 snake.move()
-                time_to_move_snake = now + snake.speed
+                time_to_move_snake = now + snake.delay
             end
         end
 

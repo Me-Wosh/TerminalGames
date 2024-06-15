@@ -32,8 +32,8 @@ def show_cursor
     print "\e[?25h"
 end
 
-def move_cursor(rows, columns)
-    print "\e[#{rows};#{columns}H"
+def move_cursor(row, column)
+    print "\e[#{row};#{column}H"
 end
 
 def cursor_up(amount)
