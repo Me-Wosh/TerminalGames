@@ -28,8 +28,8 @@ def draw_screen(snake, food)
 end
 
 def main_menu(option)
-    middle_row = ROWS / 2
-    middle_column = COLUMNS / 2
+    middle_row = ROWS / 2 + 1
+    middle_column = COLUMNS / 2 + 1
     
     menu_message = "Menu"
 
@@ -40,11 +40,11 @@ def main_menu(option)
     longest_option = options.max() { | i, j | i.length <=> j.length }
 
     3.times do | i |
-        move_cursor(middle_row + i, middle_column - longest_option.length / 2 + 2)
+        move_cursor(middle_row + i, middle_column - longest_option.length / 2 + 1)
         print options[i]
     end
 
-    move_cursor(middle_row + option, middle_column - longest_option.length / 2)
+    move_cursor(middle_row + option, middle_column - longest_option.length / 2 - 1)
     print ">"
 end
 
