@@ -9,6 +9,37 @@ Windows CMD and PowerShell aren't aware of the concept of getting user input wit
 
 <br/>
 
+# Installation
+
+Clone the GitHub repository into the current folder:
+```
+git clone https://github.com/Me-Wosh/TerminalGames.git
+```
+
+<br/>
+
+Navigate to the specific game folder (SpaceInvaders / Snake):
+
+<br/>
+
+Run program with ruby:
+```
+ruby main.rb
+```
+
+<br/>
+
+To check if you have ruby installed type:
+```
+ruby -v
+```
+
+If you don't have ruby installed I recommend installing it while using a manager (rbenv, chruby, etc.), especially if you are on macOS
+
+More installation info: https://www.ruby-lang.org/en/documentation/installation/
+
+<br/>
+
 # Space Invaders
 
 ### It features (I believe) all mechanics that the original game had, that is:
