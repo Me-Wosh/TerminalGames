@@ -8,7 +8,7 @@ class Snake
     @game_mode = nil
     @one_percent_delay = nil
     @one_percent_positions = nil
-    attr_reader :bodies_positions, :head, :direction, :delay, :head_symbol, :bodies_symbol, :color
+    attr_reader :bodies_positions, :head, :direction, :initial_delay, :delay, :head_symbol, :bodies_symbol, :color
 
     def initialize(row, column, game_mode, available_positions)
         @bodies_positions = [Position.new(row, column)]
@@ -21,18 +21,30 @@ class Snake
         @game_mode = game_mode
 
         # after what time the snake will move again (in seconds)
-        proposed_delay = 91.0 / available_positions
+        proposed_delay = 100.0 / available_positions
         
-        if proposed_delay < 0.05
-            @delay = 0.05
+        if proposed_delay < 0.08
+            @initial_delay = 0.08
         elsif proposed_delay > 0.35
-            @delay = 0.35
+            @initial_delay = 0.35
         else
-            @delay = proposed_delay
+            @initial_delay = proposed_delay
         end
 
-        @one_percent_delay = 0.01 * @delay
-        @one_percent_positions = (0.01 * available_positions).to_int()
+        @delay = @initial_delay
+
+        if @game_mode == SPEED
+            @one_percent_delay = 0.01 * @delay
+            @one_percent_positions = 0.01 * available_positions
+
+            # if food needed to speed up is less than one, calculate how much faster (instead of 1% faster)
+            # the snake needs to become after eating 1 food
+            if 1 / @one_percent_positions > 1
+                @one_percent_delay *= 1 / @one_percent_positions
+            end
+
+            @one_percent_positions = @one_percent_positions.ceil()
+        end
 
         @head_symbol = "&"
         @bodies_symbol = "#"

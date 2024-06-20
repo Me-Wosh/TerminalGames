@@ -1,13 +1,18 @@
 require "./food.rb"
+require "./game_modes.rb"
 require "./snake.rb"
 require "../colors.rb"
 require "../terminal_commands.rb"
 
-def draw_screen(snake, food)
+def draw_screen(snake, food, game_mode)
     move_cursor(1, 1)
     font_color(WHITE)
     draw_borders()
     draw_score()
+
+    if game_mode == SPEED
+        draw_snake_speed(snake)
+    end
 
     if food != nil
         move_cursor(food.position.y, food.position.x)
@@ -68,7 +73,19 @@ end
 
 def draw_score()
     move_cursor(2, 2)
-    print "Score: #{$score}"
+    print "Score:#{$score}"
+end
+
+def draw_snake_speed(snake)
+    # since delay gets smaller as snake eats more food this variable instead of going up and being equal to
+    # 100%, 101%, 102% will instead be going down so it will be equal 100%, 99%, 98% thats why this value is
+    # subtracted from 100 to calculate the % change and then added back to 100
+    delay_change = (snake.delay / snake.initial_delay * 100).to_int()
+    percent_change = 100 - delay_change
+    current_speed = 100 + percent_change
+
+    move_cursor(2, COLUMNS / 2 + 1)
+    print "Speed:#{current_speed}%"
 end
 
 def draw_corners()

@@ -8,8 +8,8 @@ require "./snake.rb"
 require "../terminal_commands.rb"
 require "../colors.rb"
 
-ROWS = 30
-COLUMNS = 80
+ROWS = 20
+COLUMNS = 40
 $score = 1
 
 def get_all_positions()
@@ -68,30 +68,24 @@ if __FILE__ == $0
 
             # space
             if key == " "
-                case option
-                    when 0
-                        game_mode = CLASSIC
-                        $score = 1
-                        
-                        snake = Snake.new(ROWS / 2, COLUMNS / 2, game_mode, all_positions.length)
-                        time_to_move_snake = Time.now() + snake.delay
-
-                        clear_screen()
-
-                    when 1
-                        game_mode = SPEED
-                        $score = 1
-
-                        snake = Snake.new(ROWS / 2, COLUMNS / 2, game_mode, all_positions.length)
-                        time_to_move_snake = Time.now() + snake.delay
-
-                        clear_screen()
-
-                    when 2
-                        game_loop = false
-                        clear_screen()
-                        break
+                if option == 2
+                    game_loop = false
+                    clear_screen()
+                    break
                 end
+
+                if option == 0
+                    game_mode = CLASSIC
+                elsif option == 1
+                    game_mode = SPEED
+                end
+
+                $score = 1
+                # exclude top panel
+                snake = Snake.new((ROWS + 2) / 2 + 1, COLUMNS / 2 + 1, game_mode, all_positions.length)
+                time_to_move_snake = Time.now() + snake.delay
+                clear_screen()
+                next
             end
 
             # up arrow
@@ -190,7 +184,7 @@ if __FILE__ == $0
             end
         end
 
-        draw_screen(snake, food)
+        draw_screen(snake, food, game_mode)
     end
 
     set_terminal_size(initial_terminal_size.first, initial_terminal_size.last)
