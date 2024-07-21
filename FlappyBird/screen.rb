@@ -1,7 +1,11 @@
-def draw_screen(obstacles)
+def draw_screen(bird, obstacles)
 
     move_cursor(1, 1)
     font_color(DEFAULT)
+
+    move_cursor(bird.position.y, bird.position.x)
+    font_color(bird.color)
+    print bird.symbol
 
     obstacles.each do | obstacle |
 
