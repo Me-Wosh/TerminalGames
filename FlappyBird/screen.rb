@@ -1,4 +1,4 @@
-def draw_screen(bird, obstacles)
+def draw_screen(bird, obstacles, points)
 
     move_cursor(1, 1)
     font_color(DEFAULT)
@@ -17,5 +17,9 @@ def draw_screen(bird, obstacles)
 
         end
     end
+
+    move_cursor(ROWS / 4, COLUMNS / 2)
+    font_color(WHITE)
+    print points
 
 end

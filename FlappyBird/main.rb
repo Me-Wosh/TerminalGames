@@ -21,6 +21,7 @@ if __FILE__ == $0
     last_obstacle_move = Time.now() - Obstacle.spawn_delay
 
     game_loop = true
+    points = 0
 
     while game_loop
 
@@ -37,6 +38,11 @@ if __FILE__ == $0
                 clear_screen()
             end
 
+        end
+
+        if bird.hit_edge() || bird.hit_obstacle(obstacles)
+            game_loop = false
+            break
         end
 
         bird.previous_position = Position.new(bird.position.y, bird.position.x)
@@ -62,6 +68,10 @@ if __FILE__ == $0
 
             end
 
+            if bird.passed_obstacle(obstacles)
+                points += 1
+            end
+
             if obstacle_to_delete
                 obstacles.delete(obstacle_to_delete)
             end
@@ -75,7 +85,7 @@ if __FILE__ == $0
             last_obstacle_spawn = now
         end
 
-        draw_screen(bird, obstacles)
+        draw_screen(bird, obstacles, points)
 
     end
 
