@@ -1,11 +1,11 @@
 # Terminal Games
 
-It was a fun project that helped me learn more about the ANSI/ASCII characters and terminal input/output manipulation. Besides that it was my first Ruby project so this way I could learn about its syntax, thought process behind the language and I could try something new.
+It was a fun project that helped me learn more about the ANSI/ASCII characters and terminal input/output manipulation. Also my first Ruby project.
 
 <br/>
 
 # NOTE
-Windows CMD and PowerShell aren't aware of the concept of getting user input without blocking the program so the games might not work properly. The easiest workaround is to run a second thread responsible only for user input.
+Windows CMD and PowerShell don't support getting user input without pausing the program. The easiest workaround is to run a second thread responsible only for user input (I'll update the code eventually).
 
 <br/>
 
@@ -34,7 +34,7 @@ To check if you have ruby installed type:
 ruby -v
 ```
 
-If you don't have ruby installed I recommend installing it while using a manager (rbenv, chruby, etc.), especially if you are on macOS
+If you don't have ruby installed I highly recommend installing it with a manager (rbenv, chruby, etc.), especially if you are on macOS and don't want to spend your entire day installing Ruby just because macOS already comes with Ruby installed and making it use the correct version is a pain in the ass.
 
 More installation info: https://www.ruby-lang.org/en/documentation/installation/
 
@@ -47,8 +47,8 @@ More installation info: https://www.ruby-lang.org/en/documentation/installation/
 * Shooting at enemies
 * Enemies moving at intervals and shooting back at the player
 * Special faster enemy that spawns once in a while and rewards bonus points if shot
-* Shields that block both enemies and player bullets
-* 3 lives that can regenerate if certain conditions are met
+* Shields that block both enemy bullets and player bullets
+* Lives that can regenerate if certain conditions are met
 * Level ups
 
 ### Short demo
@@ -75,4 +75,6 @@ https://github.com/Me-Wosh/TerminalGames/assets/101999705/b1011a47-0410-463d-bae
 ### Menu
 https://github.com/Me-Wosh/TerminalGames/assets/101999705/ad8afba3-8f0c-4ad0-93ea-d9e44e37b76d
 
+# Flappy Bird
 
+Work in progress.
