@@ -64,6 +64,10 @@ def font_color(color)
     print "\e[#{color}m"
 end
 
+def background_color(color)
+    print "\e[#{color}m"
+end
+
 def setup_terminal(rows, columns)
     set_terminal_size(rows, columns)
     hide_cursor()
@@ -75,6 +79,7 @@ end
 def reset_terminal(rows, columns)
     set_terminal_size(rows, columns)
     font_color(DEFAULT)
+    background_color(DEFAULT_BACKGROUND)
     show_cursor()
     show_key_input()
     clear_screen()

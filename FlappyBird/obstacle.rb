@@ -1,20 +1,19 @@
 class Obstacle
 
-    GAP_SIZE = 4
-    attr_reader :positions, :color, :symbol
+    GAP_SIZE = 3
+    attr_reader :positions, :color
 
     def initialize()
 
         @positions = []
-        @color = GREEN
-        @symbol = "#"
+        @color = GREEN_BACKGROUND
 
         spawn()
     end
 
     def self.spawn_delay
         # in seconds
-        return 2
+        return 1.5
     end
 
     def self.move_delay

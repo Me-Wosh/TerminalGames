@@ -3,6 +3,7 @@ require "./bird.rb"
 require "./obstacle.rb"
 require "./position.rb"
 require "./screen.rb"
+require "../background_colors.rb"
 require "../colors.rb"
 require "../terminal_commands.rb"
 
